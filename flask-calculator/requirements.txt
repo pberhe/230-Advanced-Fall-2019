@@ -1,0 +1,9 @@
+gunicorn
+psycopg2-binary
+peewee
+flask
+autopep8==1.4.4
+docutils==0.14
+jmespath==0.9.4
+rsa==3.4.2
+s3transfer==0.2.0
