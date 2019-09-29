@@ -17,6 +17,8 @@ def all_tasks():
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():
+    if 'username' not in session:
+        return redirect(url_for('login'))
     # If the method is POST:
     #    then use the name that the user submitted to create a
     #    new task and save it
@@ -49,9 +51,34 @@ def login():
             return redirect(url_for('all_tasks'))
 
         return render_template('login.jinja2', error="Incorrect username or password.")
-        
+
     else:
         return render_template('login.jinja2')
+
+
+@app.route('/incomplete', methods=['GET', 'POST'])
+def incomplete_tasks():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    # If the visitor is not logged in as a user:
+        # Then redirect them to the login page
+    
+    if request.method == 'POST':
+        user = User.select().where(User.name == session['username']).get()
+
+        Task.update(performed=datetime.now(), performed_by=user) \
+            .where(Task.id == request.form['task_id']) \
+                .execute()
+    
+    return render_template('incomplete.jinja2', tasks=Task.select().where(Task.performed.is_null()))
+    # If the request method is POST
+        # Then retrieve the username from the session and find the associated user
+        # Retrieve the task_id from the form submission and use it to find the associated task 
+        # Update the task to indicate that it has been completed at datetime.now() by the current user 
+        # Retrieve a list of all incomplete tasks 
+        # Render the incomplete.jinja2 template, injecting in the list of all incomplete tasks
+
+
 
 
 
