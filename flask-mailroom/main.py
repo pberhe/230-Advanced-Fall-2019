@@ -1,5 +1,5 @@
 import os
-import base64
+import base64 # <- why is this here?
 
 from flask import Flask, render_template, request, redirect, url_for, session
 
@@ -24,17 +24,27 @@ def create():
 
     # post request should query db for the donor, add donation, redir to /all
     if request.method == 'POST':
-        donor = Donor(name=request.form['name'])
-        print(donor)
-        value = Donation(value=request.form['amount'])
-        print(value)
-
-        Donation(donor=donor, value=value).save()
-        # saved_donation = Donation(
-        #     donor=request.form['name'], value=request.form['amount'])
-        #saved_donation.save()
-
-        return redirect(url_for('all'))
+        # want to make sure there is an acceptable value entered:
+        try:
+            value = int(request.form['amount'])
+        except ValueError:
+            render_template('create.jinja2')
+        if value <= 0:
+            render_template('create.jinja2')
+        else:
+            donor_name = request.form['name']
+            if donor_name:
+                try:
+                    donor = Donor.select().where(Donor.name == donor_name).get()
+                except Donor.DoesNotExist:
+                    donor = Donor(donor_name)
+                    donor.save()
+                donation = Donation(value=value, donor=donor_name) # <- broken
+                print('!!!!!!!!! donation', donation) # <- None 
+                donation.save() # <- can't save None. Index error
+                return redirect(url_for('all'))
+            else:
+                return render_template('create.jinja2')
 
     return render_template('create.jinja2', create=create)
 
