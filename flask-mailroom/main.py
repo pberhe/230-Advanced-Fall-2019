@@ -35,7 +35,7 @@ def create():
                 try:
                     donor = Donor.select().where(Donor.name == donor_name).get()
                 except Donor.DoesNotExist as e:
-                    donor = Donor(donor_name)
+                    donor = Donor(name=donor_name)
                     donor.save()
 
                 donation = Donation(value=value, donor=donor)
