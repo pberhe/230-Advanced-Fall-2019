@@ -1,6 +1,4 @@
 import os
-import base64 # <- why is this here?
-
 from flask import Flask, render_template, request, redirect, url_for, session
 
 from model import Donation, Donor
@@ -39,9 +37,8 @@ def create():
                 except Donor.DoesNotExist:
                     donor = Donor(donor_name)
                     donor.save()
-                donation = Donation(value=value, donor=donor_name) # <- broken
-                print('!!!!!!!!! donation', donation) # <- None 
-                donation.save() # <- can't save None. Index error
+                donation = Donation(value=value, donor=donor)
+                donation.save()
                 return redirect(url_for('all'))
             else:
                 return render_template('create.jinja2')
