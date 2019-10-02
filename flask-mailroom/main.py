@@ -22,7 +22,7 @@ def create():
 
     # post request should query db for the donor, add donation, redir to /all
     if request.method == 'POST':
-        # want to make sure there is an acceptable value entered:
+        # want to make sure there is an acceptab le value entered:
         try:
             value = int(request.form['amount'])
         except ValueError:
@@ -34,9 +34,10 @@ def create():
             if donor_name:
                 try:
                     donor = Donor.select().where(Donor.name == donor_name).get()
-                except Donor.DoesNotExist:
+                except Donor.DoesNotExist as e:
                     donor = Donor(donor_name)
                     donor.save()
+
                 donation = Donation(value=value, donor=donor)
                 donation.save()
                 return redirect(url_for('all'))
@@ -46,8 +47,6 @@ def create():
     return render_template('create.jinja2', create=create)
 
     
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 6738))
     app.run(host='0.0.0.0', port=port, debug=True)
-
