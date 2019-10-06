@@ -26,9 +26,9 @@ def create():
         try:
             value = int(request.form['amount'])
         except ValueError:
-            render_template('create.jinja2')
+            render_template('create.jinja2', error="You must enter a number.")
         if value <= 0:
-            render_template('create.jinja2')
+            render_template('create.jinja2', error="You must enter a value greater than 0.")
         else:
             donor_name = request.form['name']
             if donor_name:
